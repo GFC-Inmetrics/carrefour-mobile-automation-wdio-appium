@@ -22,4 +22,77 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
-      # 3️⃣ Setup
+      # 3️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # 4️⃣ Cache do npm
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 5️⃣ Instalar dependências do projeto
+      - name: Install dependencies
+        run: npm install
+
+      # 6️⃣ Cache do Android SDK
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        with:
+          path: ~/.android
+          key: ${{ runner.os }}-android-sdk
+
+      # 7️⃣ Setup Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 8️⃣ Aceitar licenças do Android SDK
+      - name: Accept Android Licenses
+        run: yes | sdkmanager --licenses
+
+      # 9️⃣ Instalar system image x86 do Android 30
+      - name: Install Android System Image
+        run: |
+          sdkmanager --list | grep "system-images;android-30;google_apis;x86" || \
+          yes | sdkmanager "system-images;android-30;google_apis;x86"
+
+      # 🔟 Instalar Appium e UIAutomator2 driver
+      - name: Install Appium and UIAutomator2 Driver
+        run: |
+          if ! command -v appium &> /dev/null; then
+            npm install -g appium
+            appium driver install uiautomator2 || echo "Driver already installed"
+          else
+            echo "Appium already installed"
+          fi
+
+      # 1️⃣1️⃣ Criar AVD (emulador) se não existir
+      - name: Create Emulator
+        run: |
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          export PATH=$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$PATH
+          avdmanager list avd | grep test || \
+          echo "no" | avdmanager create avd \
+            --name test \
+            --package "system-images;android-30;google_apis;x86" \
+            --device "pixel" \
+            --force
+
+      # 1️⃣2️⃣ Iniciar emulador (headless)
+      - name: Start Emulator
+        run: |
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          export PATH=$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$PATH
+          nohup emulator -avd test -no-snapshot-load -no-window &
+          adb wait-for-device
+          adb shell input keyevent 82
+
+      # 1️⃣3️⃣ Rodar os testes WebdriverIO
+      - name: Run Tests
+        run: npx wdio run wdio.conf.js
