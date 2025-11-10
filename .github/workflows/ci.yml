@@ -37,25 +37,18 @@ jobs:
         run: npm install -g appium
 
       # 6️⃣ Instalar ou atualizar driver uiautomator2
-      - name: Install or Update UIAutomator2 Driver
+      - name: Install/Update UIAutomator2 Driver
         run: |
+          npm install -g appium
           appium driver update uiautomator2 || appium driver install uiautomator2
 
-      # 7️⃣ Rodar emulador + testes
+      # 7️⃣ Rodar emulador ARM e testes
       - name: Run Android Emulator and Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
           target: google_apis
-          arch: x86
+          arch: arm64-v8a
           force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect
+          emulator-options: -no-window
           script: npx wdio run wdio.conf.js
-
-      # 8️⃣ Gerar relatório Allure
-      - name: Generate Allure Report
-        run: npx allure generate allure-results --clean -o allure-report
-
-      # 9️⃣ Servir relatório Allure (opcional)
-      - name: Serve Allure Report
-        run: npx allure open allure-report
