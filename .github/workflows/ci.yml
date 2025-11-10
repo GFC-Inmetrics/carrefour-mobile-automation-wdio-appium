@@ -43,4 +43,20 @@ jobs:
 
       # 8️⃣ Criar AVD (emulador)
       - name: Create Emulator
-        run: echo "no" | avdmanager create
+        run: |
+          avdmanager create avd \
+            --name test \
+            --package "system-images;android-30;google_apis;x86" \
+            --device "pixel" \
+            --force
+
+      # 9️⃣ Iniciar emulador
+      - name: Start Emulator
+        run: |
+          nohup emulator -avd test -no-snapshot-load -no-window &
+          adb wait-for-device
+          adb shell input keyevent 82
+
+      # 🔟 Rodar os testes WebdriverIO
+      - name: Run Tests
+        run: npx wdio run wdio.conf.js
