@@ -53,7 +53,7 @@ jobs:
       - name: Install Android System Image
         run: sdkmanager "system-images;android-30;google_apis;x86"
 
-      # 9️⃣ Criar AVD (emulador) com device definido
+      # 9️⃣ Criar AVD (emulador)
       - name: Create Emulator
         run: |
           echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" -d "pixel" --force
