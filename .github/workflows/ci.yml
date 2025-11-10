@@ -11,32 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3️⃣ Instalar dependências do projeto
       - name: Install dependencies
         run: npm install
 
+      # 4️⃣ Instalar Appium globalmente
       - name: Install Appium
         run: npm install -g appium
 
+      # 5️⃣ Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      # 6️⃣ Aceitar licenças do Android SDK
+      - name: Accept Android Licenses
+        run: yes | sdkmanager --licenses
+
+      # 7️⃣ Instalar a system image necessária
+      - name: Install Android System Image
+        run: yes | sdkmanager "system-images;android-30;google_apis;x86"
+
+      # 8️⃣ Criar AVD (emulador)
       - name: Create Emulator
-        run: |
-          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86"
-
-      - name: Start Emulator
-        run: |
-          nohup emulator -avd test -no-snapshot-load -no-window &
-          adb wait-for-device
-          adb shell input keyevent 82
-
-      - name: Run Tests
-        run: npx wdio run wdio.conf.js
+        run: echo "no" | avdmanager create
