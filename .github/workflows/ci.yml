@@ -53,18 +53,22 @@ jobs:
       - name: Install Android System Image
         run: sdkmanager "system-images;android-30;google_apis;x86"
 
-      # 9️⃣ Criar AVD (emulador)
+     # 9️⃣ Criar AVD (emulador)
       - name: Create Emulator
         run: |
+          mkdir -p $HOME/.android/avd
+          export ANDROID_AVD_HOME=$HOME/.android/avd
           echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" -d "pixel" --force
           $ANDROID_HOME/emulator/emulator -list-avds
 
       # 🔟 Iniciar emulador
       - name: Start Emulator
         run: |
+          export ANDROID_AVD_HOME=$HOME/.android/avd
           nohup $ANDROID_HOME/emulator/emulator -avd test -no-snapshot-load -no-window &
           adb wait-for-device
           adb shell input keyevent 82
+
 
       # 1️⃣1️⃣ Rodar testes
       - name: Run Tests
