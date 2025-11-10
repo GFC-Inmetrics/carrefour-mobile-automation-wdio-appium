@@ -39,16 +39,13 @@ jobs:
       # 6️⃣ Instalar ou atualizar driver uiautomator2
       - name: Install Appium and Update UIAutomator2 Driver
         run: |
-          npm install -g appium
           appium driver update uiautomator2 || appium driver install uiautomator2
-
 
       # 7️⃣ Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
           api-level: 30
-          target: android-30
           arch: x86
           force-accept-licenses: true
 
@@ -56,11 +53,11 @@ jobs:
       - name: Install Android System Image
         run: sdkmanager "system-images;android-30;google_apis;x86"
 
-     # 9️⃣ Criar AVD (emulador)
+      # 9️⃣ Criar AVD (emulador) com device definido
       - name: Create Emulator
         run: |
           echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" -d "pixel" --force
-
+          $ANDROID_HOME/emulator/emulator -list-avds
 
       # 🔟 Iniciar emulador
       - name: Start Emulator
