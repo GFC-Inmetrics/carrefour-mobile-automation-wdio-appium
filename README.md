@@ -5,7 +5,7 @@ Este projeto tem como objetivo realizar testes automatizados em aplicações mob
 
 ---
 
-## 🧱 Estrutura do Projeto
+## - Estrutura do Projeto
 
 ```
 .
@@ -23,7 +23,7 @@ Este projeto tem como objetivo realizar testes automatizados em aplicações mob
 
 ---
 
-## 🎯 Principais Tecnologias
+## - Principais Tecnologias
 
 | Tecnologia | Descrição |
 |----------|-----------|
@@ -36,7 +36,7 @@ Este projeto tem como objetivo realizar testes automatizados em aplicações mob
 
 ---
 
-## ⚙️ Configuração de Plataforma
+## - Configuração de Plataforma
 
 A execução é definida pelas variáveis:
 
@@ -67,7 +67,7 @@ PLATFORM=ios DEVICE=emulator npx wdio run wdio.conf.js
 
 ---
 
-## 📱 Capacidades configuradas (wdio.conf.js)
+## - Capacidades configuradas (wdio.conf.js)
 
 - **Android Real Device**
 - **Android Emulator**
@@ -83,7 +83,7 @@ function selectCapabilities() {
 
 ---
 
-## 🧪 Estrutura do Page Object
+## - Estrutura do Page Object
 
 ### Exemplo: `forms.page.js`
 
@@ -113,7 +113,7 @@ async signUp(email, password, confirmPassword) {
 
 ---
 
-## 📝 Execução dos Testes
+## - Execução dos Testes
 
 Rodar todos os testes:
 
@@ -123,7 +123,7 @@ npx wdio run wdio.conf.js
 
 ---
 
-## 📊 Relatórios Allure
+## - Relatórios Allure
 
 Gerar relatório após execução:
 
@@ -134,12 +134,12 @@ allure open allure-report
 
 ---
 
-## 🤝 Contribuição
+## - Contribuição
 
 Sinta-se livre para abrir **issues** e contribuir com melhorias.
 
 ---
 
-## 📜 Licença
+## - Licença
 
 Este projeto é distribuído sob licença MIT.
