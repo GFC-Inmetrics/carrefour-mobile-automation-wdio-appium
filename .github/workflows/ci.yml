@@ -6,14 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  ANDROID_SDK_ROOT: C:\Users\guilherme.clemente\Android\Sdk
-  ANDROID_HOME: C:\Users\guilherme.clemente\Android\Sdk
-  USE_ANDROID_EMULATOR: true  # Defina false se quiser pular o emulador
-
 jobs:
   android-tests:
     runs-on: ubuntu-latest
+    env:
+      PLATFORM: android
+      DEVICE: emulator
 
     steps:
       # 1️⃣ Checkout do repositório
@@ -41,12 +39,11 @@ jobs:
       - name: Install Appium
         run: npm install -g appium
 
-      # 6️⃣ Instalar ou atualizar driver uiautomator2
-      - name: Install Appium UIAutomator2 Driver
-        run: |
-          appium driver update uiautomator2 || appium driver install uiautomator2
+      # 6️⃣ Atualizar driver UIAutomator2
+      - name: Update UIAutomator2 Driver
+        run: appium driver update uiautomator2 || appium driver install uiautomator2
 
-      # 7️⃣ Setup Android SDK e licenças
+      # 7️⃣ Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
@@ -55,47 +52,82 @@ jobs:
           arch: x86
           force-accept-licenses: true
 
-      # 8️⃣ Executar emulador Android (opcional)
-      - name: Run Android Emulator
-        if: env.USE_ANDROID_EMULATOR == 'true'
+      # 8️⃣ Instalar System Image x86
+      - name: Install Android System Image
+        run: sdkmanager "system-images;android-30;google_apis;x86"
+
+      # 9️⃣ Criar AVD (emulador)
+      - name: Create Android Emulator
+        run: |
+          mkdir -p $HOME/.android/avd
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86" --force
+          printf 'hw.cpu.ncore=2\n' >> $HOME/.android/avd/test.avd/config.ini
+
+      # 🔟 Iniciar emulador Android
+      - name: Start Android Emulator
+        if: env.DEVICE == 'emulator'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
           target: google_apis
           arch: x86
           force-avd-creation: true
-          emulator-options: -no-window -accel off
-          script: |
-            adb wait-for-device
-            adb shell input keyevent 82
+          emulator-options: -no-window -gpu swiftshader_indirect -accel off
 
-      # 9️⃣ Executar testes Android
+      # 1️⃣1️⃣ Executar testes Android (real ou emulator)
       - name: Run Android Tests
+        if: env.PLATFORM == 'android'
         run: npx wdio run wdio.conf.js
-        env:
-          PLATFORM: android
-          DEVICE: emulator  # ou 'real' se quiser dispositivo físico
-
-      # 🔟 Gerar relatório Allure
-      - name: Generate Allure Report
-        run: npx allure generate allure-results --clean -o allure-report
-
-      # 1️⃣1️⃣ Publicar relatório (opcional)
-      - name: Publish Allure Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: allure-report
-          path: allure-report
 
   ios-tests:
     runs-on: macos-latest
-    if: runner.os == 'macOS'
+    env:
+      PLATFORM: ios
+      DEVICE: emulator
 
+    steps:
+      # 1️⃣ Checkout do repositório
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # 3️⃣ Instalar dependências
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Instalar Appium
+      - name: Install Appium
+        run: npm install -g appium
+
+      # 5️⃣ Atualizar driver XCUITest
+      - name: Update XCUITest Driver
+        run: appium driver update xcuitest || appium driver install xcuitest
+
+      # 6️⃣ Iniciar simulador iOS
+      - name: Start iOS Simulator
+        if: env.DEVICE == 'emulator'
+        run: |
+          xcrun simctl boot "iPhone 14" || echo "Simulator already booted"
+          xcrun simctl list devices
+
+      # 7️⃣ Executar testes iOS
+      - name: Run iOS Tests
+        if: env.PLATFORM == 'ios'
+        run: npx wdio run wdio.conf.js
+
+  generate-allure-report:
+    runs-on: ubuntu-latest
+    needs: [android-tests, ios-tests]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -103,25 +135,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Appium
-        run: npm install -g appium
-
-      # iOS Simulator (não precisa de sudo)
-      - name: Boot iOS Simulator
-        run: |
-          xcrun simctl boot "iPhone 14"
-          xcrun simctl list devices
-
-      - name: Run iOS Tests
-        run: npx wdio run wdio.conf.js
-        env:
-          PLATFORM: ios
-          DEVICE: emulator
-
       - name: Generate Allure Report
         run: npx allure generate allure-results --clean -o allure-report
 
-      - name: Publish Allure Report
+      - name: Upload Allure Report Artifact
         uses: actions/upload-artifact@v3
         with:
           name: allure-report
