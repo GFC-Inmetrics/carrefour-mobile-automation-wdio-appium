@@ -25,13 +25,13 @@ jobs:
       - name: Install Appium and UIAutomator2 Driver
         run: |
           npm install -g appium
-          # Verifica se o driver está instalado
+          # Verifica se o driver já está instalado
           if ! appium driver list --installed | grep uiautomator2; then
             echo "uiautomator2 não instalado. Instalando..."
-            appium driver install uiautomator2@6.1.1 --source=npm
+            appium driver install uiautomator2 --source=npm
           else
-            echo "uiautomator2 já instalado. Atualizando para a versão mínima compatível..."
-            appium driver update uiautomator2@6.1.1 --source=npm
+            echo "uiautomator2 já instalado. Atualizando..."
+            appium driver update uiautomator2 --source=npm
           fi
 
       - name: Setup Android SDK
