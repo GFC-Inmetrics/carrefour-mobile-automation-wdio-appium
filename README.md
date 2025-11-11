@@ -52,9 +52,9 @@ Executar em **Android real**:
 ```
 PLATFORM=android DEVICE=real
  - Estabelecer conexão com porta: 4723 via comandos:
-    `npx appium` - conexão com servidor é estebelecida, capabities já possuí as configurações para conexão com essa porta.
- - Validar conexão com celular via comando:`adb connect 192.168.0.89:5555`, caso esteja conectado irá exibir informação.
- - Abrir novo terminal bash e executar comando de execução de testes:`npx wdio run wdio.conf.js`
+   npx appium - conexão com servidor é estebelecida, capabities já possuí as configurações para conexão com essa porta.
+ - Validar conexão com celular via comando: adb connect 192.168.0.89:5555, caso esteja conectado irá exibir informação.
+ - Abrir novo terminal bash e executar comando de execução de testes: npx wdio run wdio.conf.js
 ```
 
 Executar em **Android Emulator**:
@@ -62,9 +62,9 @@ Executar em **Android Emulator**:
 ```
 PLATFORM=android DEVICE=emulator npx wdio run wdio.conf.js
  - Possuir varíaveis de ambientes configuradas para execução:
- `Path`: inserir - nova pasta: "%ANDROID_HOME%\platform-tools" e "%ANDROID_HOME%\cmdline-tools\latest\bin"
- `ANDROID_SDK_ROOT`- "C:\Users\guilherme.clemente\Android\Sdk" substituir 'guilherme.clemente' pelo nome de usuário local e alterar caminho caso necessário.
- `ANDROID_HOME`- "C:\Users\guilherme.clemente\Android\Sdk" substituir 'guilherme.clemente' pelo nome de usuário local e alterar caminho caso necessário.
+ Path: inserir - nova pasta: "%ANDROID_HOME%\platform-tools" e "%ANDROID_HOME%\cmdline-tools\latest\bin"
+ ANDROID_SDK_ROOT - "C:\Users\guilherme.clemente\Android\Sdk" substituir 'guilherme.clemente' pelo nome de usuário local e alterar caminho caso necessário.
+ ANDROID_HOME- "C:\Users\guilherme.clemente\Android\Sdk" substituir 'guilherme.clemente' pelo nome de usuário local e alterar caminho caso necessário.
 ```
 
 Executar em **iOS Simulator**:
@@ -73,17 +73,17 @@ Executar em **iOS Simulator**:
 PLATFORM=ios DEVICE=emulator npx wdio run wdio.conf.js
 - Executar em iOS Simulator
 Comando de execução:
-`PLATFORM=ios DEVICE=emulator npx wdio run wdio.conf.js`
+PLATFORM=ios DEVICE=emulator npx wdio run wdio.conf.js
 Pré-requisitos:
 Xcode instalado
-`xcode-select --install`
+'xcode-select --install'
 Aceitar licenças do Xcode
-`sudo xcodebuild -license accept`
+'sudo xcodebuild -license accept'
 App compilado para simulador (.app)
 WebDriverAgent configurado no Xcode com assinatura válida
 Configuração no wdio.conf.js:
 Indicar caminho correto do app para simulador:
-`'appium:app': '/Users/seuUsuario/path/WdioDemoApp.app'`
+'appium:app': '/Users/seuUsuario/path/WdioDemoApp.app'`
 ```
 
 ---
