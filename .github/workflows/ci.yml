@@ -100,11 +100,22 @@ jobs:
       - name: Install Appium
         run: npm install -g appium
 
-      # 5️ Rodar testes no iOS Simulator
+      # 5 Instalar XCUITest Driver
+      - name: Install XCUITest Driver
+        run: |
+          appium driver update xcuitest || appium driver install xcuitest
+
+      # 6 Boot IOS Simulator
+      - name: Boot iOS Simulator
+        run: |
+          xcrun simctl boot "iPhone 14" || true
+          xcrun simctl bootstatus "iPhone 14" -b
+
+      # 7 Rodar testes no iOS Simulator
       - name: Run iOS Tests
         run: npx wdio run wdio.conf.js --platform ios --device simulator
 
-      # 6️ Gerar Allure Report
+      # 8 Gerar Allure Report
       - name: Generate Allure Report
         run: |
           npx allure generate allure-results --clean -o allure-report

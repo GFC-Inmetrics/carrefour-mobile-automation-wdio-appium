@@ -1,3 +1,11 @@
+const path = require('path');
+
+// Lê argumentos como --platform ios --device emulator
+process.argv.forEach(arg => {
+  if (arg.includes('--platform')) process.env.PLATFORM = arg.split('=')[1] || arg.split(' ')[1];
+  if (arg.includes('--device')) process.env.DEVICE = arg.split('=')[1] || arg.split(' ')[1];
+});
+
 const platform = process.env.PLATFORM || 'android';
 const deviceType = process.env.DEVICE || 'real';
 
@@ -62,7 +70,7 @@ exports.config = {
   ],
 
   //
-  // SCREENSHOT EM SUCESSO E FALHA
+  // SCREENSHOT EM FALHA
   //
   afterTest: async function(test, context, { error, result, duration, passed, retries }) {
 
